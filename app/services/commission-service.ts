@@ -7,7 +7,10 @@ export class CommissionService {
     async amInternalCommission(params?: InternalMouthlyQueryParams): Promise<InternalMouthlyResponseData> {
         try {
             const response = await apiService.client.get('/internal/commission', {
-                params
+                params,
+                headers: {
+                    authorization: `Bearer ${useAuth().state.token}`
+                }
             })
             return response.data
         } catch (error: any) {
@@ -18,7 +21,10 @@ export class CommissionService {
     async implementatorCommission(params?: ImplementatorMouthlyQueryParams): Promise<ImplementatorMouthlyResponseData> {
         try {
             const response = await apiService.client.get('/implementator/commission', {
-                params
+                params,
+                headers: {
+                    authorization: `Bearer ${useAuth().state.token}`
+                }
             })
             return response.data
         } catch (error: any) {
@@ -29,7 +35,10 @@ export class CommissionService {
     async managerCommission(params?: ManagerMouthlyQueryParams): Promise<ManagerMouthlyResponseData> {
         try {
             const response = await apiService.client.get('/manager/commission', {
-                params
+                params,
+                headers: {
+                    authorization: `Bearer ${useAuth().state.token}`
+                }
             })
             return response.data
         } catch (error: any) {
@@ -40,7 +49,10 @@ export class CommissionService {
     async invoiceData(params?: InvoiceQueryParams): Promise<InvoiceResponseData> {
         try {
             const response = await apiService.client.get('/internal/am/invoice', {
-                params
+                params,
+                headers: {
+                    authorization: `Bearer ${useAuth().state.token}`
+                }
             })
             return response.data
         } catch (error: any) {

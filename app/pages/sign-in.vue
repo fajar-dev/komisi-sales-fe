@@ -5,22 +5,27 @@
 
         <UContainer class="max-w-md relative z-10">
             <div
-                class="p-5"
+                class="p-0"
             >
-                <div class="space-y-6 text-center">
-                    <!-- <div class="flex justify-center mb-4">
+                <UCard>
+                  <div class="space-y-6 text-center">
+                    <div class="flex justify-center mb-5">
                         <img
                             src="/logo.png"
                             alt="Sele-Sele Logo"
-                            class="h-14 w-auto object-contain transition-transform hover:scale-110 duration-300"
+                            class="h-10 w-auto object-contain transition-transform hover:scale-110 duration-300"
                         />
-                    </div> -->
+                    </div>
                     
                     <div class="space-y-2">
-                        <p class="text-gray-600 dark:text-gray-400 text-sm">
-                            You must login to continue
+                        <p class="text-gray-700 dark:text-gray-300 text-sm font-medium">
+                            Komisi Sales Digital Business
+                        </p>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs">
+                            Login untuk melanjutkan.
                         </p>
                     </div>
+
                     
                     <UButton
                         variant="soft"
@@ -39,25 +44,23 @@
                     </UButton>
                     
                     <!-- Footer -->
-                    <div class="pt-4">
-                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                            By continuing, you agree to our 
-                            <a href="#" class="underline hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                                Terms of Service
-                            </a> 
-                            and 
-                            <a href="#" class="underline hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-                                Privacy Policy
-                            </a>
-                        </p>
+                    <div class="pt-4 ">
+                      <p class="text-gray-600 dark:text-gray-400 text-sm">
+                         PT. Media Antar Nusa • © {{ new Date().getFullYear() }}
+                      </p>
                     </div>
                 </div>
+                </UCard>
             </div>
         </UContainer>
     </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: 'auth'
+})
+
 const googleLoading = ref(false)
 const toast = useToast()
 import { authService } from "~/services/auth-service"
