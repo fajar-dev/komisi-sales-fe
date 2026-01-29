@@ -82,7 +82,17 @@ const handleOnSuccess = async (response: any) => {
   try {
     const result = await authService.googleLogin(response.code);
     toast.add({ title: 'Login Successful', color: 'primary' })
-    navigateTo('/')
+    if(result.data.user.job_level === 'Manager' && result.data.user.organization_name === 'Sales Nusawork') {
+      navigateTo(`/${result.data.user.employee_id}/manager`)
+    } else if(result.data.user.job_level === 'Staff' && result.data.user.organization_name === 'Nusawork') {
+      navigateTo(`/${result.data.user.employee_id}/implementator`)
+    // } else if(result.data.user.job_level === 'Staff' && result.data.user.organization_name === 'Sales GWS') {
+    //   navigateTo(`/${result.data.user.employee_id}/resale`)
+    } else if(result.data.user.job_level === 'Staff' && result.data.user.organization_name === 'Sales Nusawork') {
+      navigateTo(`/${result.data.user.employee_id}/internal`)
+    }else{
+      navigateTo(`/`)
+    }
   } catch (error) {
     toast.add({ title: 'Authentication failed', color: 'error' })
   } finally {

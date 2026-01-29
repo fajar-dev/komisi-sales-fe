@@ -5,7 +5,7 @@
             <div class="flex items-end justify-between">
                 <div class="space-y-1">
                     <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-                        Fajar Rivaldi Chan's Commission
+                        {{ employee?.name }}'s Commission
                     </h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400">
                         Monthly internal commission heatmap 🔥                    
@@ -117,8 +117,11 @@
 
 <script setup lang="ts">
 import { CommissionService } from '~/services/commission-service'
+import { EmployeeService } from '~/services/employee-service'
+import type { Employee } from '~/types/employee'
 
 const route = useRoute()
+const employee = ref<Employee>()  
 
 // Year Select
 
@@ -188,6 +191,9 @@ const yFormatter = (tick: number) => tick.toString()
 const monthcard = ref<{ mounth: string; total: string }[]>([])
 
 const fetchData = async () => {
+    const employeeService = new EmployeeService()
+    const employeeData = await employeeService.getEmployee(route.params.id as string)
+    employee.value = employeeData.data
     const commissionService = new CommissionService()
     const data = await commissionService.amInternalCommission(route.params.id as string, { year: year.value })
     monthcard.value = data.data.data.map((item) => ({
