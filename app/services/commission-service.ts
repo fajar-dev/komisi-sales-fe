@@ -1,12 +1,12 @@
 import { apiService } from "./api-service"
-import type { InvoiceQueryParams, InvoiceResponseData, InternalMouthlyQueryParams, InternalMouthlyResponseData } from "~/types/internal"
+import type { InvoiceQueryParams, InvoiceResponseData, InternalMouthlyQueryParams, InternalMouthlyResponseData } from "~/types/sales"
 import type { ImplementatorMouthlyQueryParams, ImplementatorMouthlyResponseData } from "~/types/implementator"
 import type { ManagerMouthlyQueryParams, ManagerMouthlyResponseData } from "~/types/manager"
 
 export class CommissionService {
-    async amInternalCommission(employeeId: string, params?: InternalMouthlyQueryParams): Promise<InternalMouthlyResponseData> {
+    async salesCommission(employeeId: string, params?: InternalMouthlyQueryParams): Promise<InternalMouthlyResponseData> {
         try {
-            const response = await apiService.client.get(`/internal/${employeeId}/commission`, {
+            const response = await apiService.client.get(`/sales/${employeeId}/commission`, {
                 params,
                 headers: {
                     authorization: `Bearer ${useAuth().state.token}`

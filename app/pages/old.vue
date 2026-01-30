@@ -28,8 +28,6 @@
             :key="card.mounth"
             :title="String(card.total)"
             :description="card.mounth"
-            spotlight
-            spotlight-color="primary"
         >
         </UPageCard>
       </div>
@@ -304,7 +302,7 @@ const monthcard = ref<{ mounth: string; total: string }[]>([])
 
 onMounted(async () => {
     const commissionService = new CommissionService()
-    const data = await commissionService.amInternalCommission('0202445', { year: 2026 })
+    const data = await commissionService.salesCommission('0202445', { year: 2026 })
     monthcard.value = data.data.data.map((item) => ({
         mounth: item.month,
         total: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.total),

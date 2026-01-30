@@ -2,14 +2,23 @@
     <UContainer>
         <HeroBackground />
         <div class="py-10">
-            <div class="flex items-end justify-between">
-                <div class="space-y-1">
-                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-                        Fajar Rivaldi Chan's Commission
-                    </h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        Monthly manager commission heatmap 🔥                    
-                    </p>
+            <div class="flex md:flex-row flex-col items-end justify-between gap-4">
+                <div class="flex items-center gap-1">
+                    <UUser
+                        :avatar="{
+                            src: employee?.photo_profile,
+                            icon: 'i-lucide-image'
+                        }"
+                        :ui="{ avatar: 'h-10 w-10' }"
+                    />
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                {{ employee?.name }}'s Commission
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Monthly manager commission heatmap 🔥                    
+                        </p>
+                    </div>
                 </div>
                 <USelectMenu v-model="year" :items="items" />
             </div>
@@ -22,8 +31,6 @@
                 :key="card.mounth"
                 :title="String(card.total)"
                 :description="card.mounth"
-                spotlight
-                spotlight-color="primary"
             >
             </UPageCard>
         </div>
@@ -119,13 +126,16 @@
 
 <script setup lang="ts">
 import { CommissionService } from '~/services/commission-service'
+import { EmployeeService } from '~/services/employee-service'
+import type { Employee } from '~/types/employee'
 
 const route = useRoute()
+const employee = ref<Employee>()  
 
 // Year Select
 
 const items = ref([2026, 2027, 2028, 2029, 2030])
-const year = ref(2026)
+const year = ref(new Date().getFullYear())
 
 // Commission Chart (Area Chart)
 
@@ -135,11 +145,11 @@ const commissionChart = ref<Record<string, BulletLegendItemInterface>>({})
 const colorMode = useColorMode()
 
 const xFormatterCommission = (tick: number, _i?: number, _ticks?: number[]): string => {
-  return String(commissionData.value[tick]?.date ?? '')
+    return String(commissionData.value[tick]?.date ?? '')
 }
 
 const yFormatterCommission = (value: number): string => {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value)
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value)
 }
 
 // Total Commission Chart (Line Chart)
@@ -171,6 +181,10 @@ const yFormatter = (tick: number) => tick.toString()
 const monthcard = ref<{ mounth: string; total: string }[]>([])
 
 const fetchData = async () => {
+    const employeeService = new EmployeeService()
+    const employeeData = await employeeService.getEmployee(route.params.id as string)
+    employee.value = employeeData.data
+
     const commissionService = new CommissionService()
     const data = await commissionService.managerCommission(route.params.id as string, { year: year.value })
     

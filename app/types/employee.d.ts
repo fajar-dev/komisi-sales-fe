@@ -16,3 +16,10 @@ export interface Employee {
     branch: string
     manager_id: number
 }
+
+export interface EmployeeHierarchyResponseData {
+    success: boolean;
+    message: string;
+    data: Employee[]
+}
+
