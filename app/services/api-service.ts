@@ -31,7 +31,11 @@ export class ApiService {
             }
 
             if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true
+                if (typeof window !== 'undefined' && window.location.pathname === '/sign-in') {
+                    return Promise.reject(error)
+                }
+
+                originalRequest._retry = true
 
             if (this.refreshHandler) {
                 try {

@@ -60,9 +60,19 @@ export class AuthService {
     }
   }
 
+  async login(employeeId: string, password: string): Promise<AuthResponse> {
+    try {
+      const response = await apiService.client.post<AuthResponse>('/auth/login', { employeeId, password })
+      this.setSession(response.data)
+      return response.data
+    } catch (error: any) {
+      throw new Error(error.response.data.message)
+    }
+  }
+
   async googleLogin(code: string): Promise<AuthResponse> {
     try {
-      const response = await apiService.client.post<AuthResponse>('/auth/login', { code })
+      const response = await apiService.client.post<AuthResponse>('/auth/google', { code })
       this.setSession(response.data)
       return response.data
     } catch (error: any) {

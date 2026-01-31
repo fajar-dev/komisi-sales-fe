@@ -8,7 +8,7 @@
                 class="p-0"
             >
                 <UCard>
-                  <div class="space-y-6 text-center">
+                  <div class="space-y-4">
                     <div class="flex justify-center mb-5">
                         <img
                             src="/logo.png"
@@ -17,15 +17,30 @@
                         />
                     </div>
                     
-                    <div class="space-y-2">
-                        <p class="text-gray-700 dark:text-gray-300 text-sm font-medium">
-                            Komisi Sales Digital Business
+                    <div class="space-y-0 text-center">
+                        <p class="text-gray-700 dark:text-gray-300 text-md font-semibold">
+                            DIGITAL BUSINESS SALES  <br>COMMISSION
                         </p>
                         <p class="text-gray-500 dark:text-gray-400 text-xs">
-                            Login untuk melanjutkan.
+                            Please log in to access your dashboard.
                         </p>
                     </div>
 
+                    <UAuthForm
+                      :fields="fields"
+                      :schema="schema"
+                      :loading="loading"
+                      class="w-full"
+                      @submit="onSubmit"
+                    />
+
+                    <div class="flex items-center">
+                      <div class="h-px flex-1 bg-gray-300 dark:bg-gray-600"></div>
+                      <span class="text-sm text-gray-500 px-1">
+                        OR
+                      </span>
+                      <div class="h-px flex-1 bg-gray-300 dark:bg-gray-600"></div>
+                    </div>
                     
                     <UButton
                         variant="soft"
@@ -44,7 +59,7 @@
                     </UButton>
                     
                     <!-- Footer -->
-                    <div class="pt-4 ">
+                    <div class="pt-4 text-center">
                       <p class="text-gray-600 dark:text-gray-400 text-sm">
                           PT. Media Antar Nusa • © {{ new Date().getFullYear() }}
                       </p>
@@ -64,29 +79,20 @@ definePageMeta({
 const googleLoading = ref(false)
 const toast = useToast()
 import { authService } from "~/services/auth-service"
+import * as z from 'zod'
+import type { FormSubmitEvent } from "@nuxt/ui"
 
-const user = authService.user
-
-const userDropdownItems = computed(() => [
-  [{
-    label: 'Logout',
-    icon: 'i-lucide-log-out',
-    onSelect: () => {
-      authService.logout()
-      toast.add({ title: 'Logged out successfully' })
-    }
-  }]
-])
+const loading = ref(false)
 
 const handleOnSuccess = async (response: any) => {
   try {
     const result = await authService.googleLogin(response.code);
-    toast.add({ title: 'Login Successful', color: 'primary' })
+    toast.add({ description: 'Login Successful', color: 'primary' })
     
     const { getRoute } = useDashboardRoute()
     navigateTo(getRoute(result.data.user))
   } catch (error) {
-    toast.add({ title: 'Authentication failed', color: 'error' })
+    toast.add({ description: 'Authentication failed', color: 'error' })
   } finally {
     googleLoading.value = false
   }
@@ -106,6 +112,35 @@ const handleGoogleLogin = () => {
   if (!isReady.value) return
   googleLoading.value = true
   login()
+}
+
+const fields = [
+  { name: 'employeeId', type: 'text' as const, label: 'Employee ID', placeholder: 'Enter your employee ID', required: true },
+  { name: 'password', type: 'password' as const, label: 'Password', placeholder: 'Enter your password', required: true },
+  { name: 'remember', type: 'checkbox' as const, label: 'Remember me' }
+]
+
+const schema = z.object({
+  employeeId: z.string().min(1, 'Employee ID is required'),
+  password: z.string().min(1, 'Password is required').min(8, 'Must be at least 8 characters'),
+  remember: z.boolean().optional()
+})
+
+type Schema = z.output<typeof schema>
+
+  async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  loading.value = true
+  try {
+    const result = await authService.login(payload.data.employeeId, payload.data.password)
+    toast.add({ description: 'Login Successful', color: 'primary' })
+    
+    const { getRoute } = useDashboardRoute()
+    navigateTo(getRoute(result.data.user))
+  } catch (error: any) {
+    toast.add({ description: 'Invalid Employee ID or Password', color: 'error' })
+  } finally {
+    loading.value = false
+  }
 }
 
 </script>

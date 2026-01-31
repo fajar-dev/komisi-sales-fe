@@ -4,7 +4,7 @@
         <div class="space-y-8 py-8">
         <UPageHeader
             :title="`Hello, ${authState.user?.name ?? ''} 👋`"            
-            description="Good Morning, Have a nice day 😃"
+            :description="`${greeting}, Have a nice day 😃`"
         >
         </UPageHeader>
         </div>
@@ -65,6 +65,13 @@ const { state: authState } = useAuth()
 const employeeCard = ref<{ employeeId: string; name: string; photoProfile: string; position: string; organizationName: string; jobLevel: string; to: string }[]>([])
 
 const { getRoute } = useDashboardRoute()
+
+const greeting = computed(() => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Good Morning'
+    if (hour < 18) return 'Good Afternoon'
+    return 'Good Evening'
+})
 
 const fetchEmployeeCard = async () => {
     const employeeService = new EmployeeService()
