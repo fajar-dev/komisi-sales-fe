@@ -170,7 +170,7 @@
                         </div>
                     </div>
                 </template>
-                    <UTable :data="teamData" :columns="teamColumns" class="flex-1" />
+                    <UTable :data="teamData" :columns="teamColumns" class="flex-1" @select="onSelectTeamMember" :ui="{ tr: 'cursor-pointer' }" />
                 </UCard>
             </div>
         </div>
@@ -288,6 +288,13 @@ const teamColumns: TableColumn<ManagerTeamData>[] = [
     }
   }
 ]
+
+const onSelectTeamMember = (event: any, row: any) => {
+    const data = row?.original || row
+    if (data?.employee_id) {
+        navigateTo(`/${data.employee_id}/sales`)
+    }
+}
 
 const fetchData = async () => {
     const employeeService = new EmployeeService()

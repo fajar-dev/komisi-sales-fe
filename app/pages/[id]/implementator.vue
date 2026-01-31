@@ -153,7 +153,7 @@
                         </UPopover>
                     </div>
                 </template>
-                    <UTable :data="invoiceData" :columns="columns" class="flex-1" />
+                    <UTable sticky :data="invoiceData" :columns="columns" class="flex-1 max-h-[800px]" />
                 </UCard>
             </div>
         </div>
@@ -258,6 +258,14 @@ const columns: TableColumn<InvoiceImplementatorData>[] = [
             style: 'currency',
             currency: 'IDR'
         }).format(amount)
+        },
+        footer: ({ table }) => {
+            const rows = table.getFilteredRowModel().rows
+            const total = rows.reduce((acc, row) => acc + (Number(row.original.dpp) || 0), 0)
+            return h('div', { class: 'text-right font-bold' }, new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(total))
         }
     },
     {
@@ -276,6 +284,14 @@ const columns: TableColumn<InvoiceImplementatorData>[] = [
                 currency: 'IDR'
             }).format(row.original.implementatorCommission))
         ])
+        },
+        footer: ({ table }) => {
+            const rows = table.getFilteredRowModel().rows
+            const total = rows.reduce((acc, row) => acc + (Number(row.original.implementatorCommission) || 0), 0)
+            return h('div', { class: 'text-right font-bold' }, new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(total))
         }
     }
 ]
