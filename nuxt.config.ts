@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/': { prerender: true }
+    // '/distributor': { preroender: true }, // Example if needed, but remove '/'
   },
 
 
@@ -79,6 +79,19 @@ export default defineNuxtConfig({
           type: 'image/png',
         },
       ],
+    },
+    workbox: {
+      navigateFallback: '/',
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      cleanupOutdatedCaches: true
+    },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 3600,
+    },
+    devOptions: {
+      enabled: true,
+      type: 'module',
     }
   }
 })

@@ -96,4 +96,10 @@ watch(() => authState.user, (user) => {
     }
 }, { immediate: true })
 
+onMounted(() => {
+    if (authState.user?.employee_id) {
+        fetchEmployeeCard()
+    }
+})
+
 </script>

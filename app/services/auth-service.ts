@@ -11,27 +11,32 @@ export class AuthService {
   public token = ref<string | null>(null)
 
   constructor() {
-    this.initSession()
+    this.restoreSession() // Sync restore
+    this.validateSession() // Async validation in background
     apiService.setRefreshHandler(this.refreshToken.bind(this))
   }
 
-  private async initSession() {
+  private restoreSession() {
     if (typeof window === 'undefined') return
 
     const accessToken = localStorage.getItem(this.ACCESS_TOKEN_KEY)
-    
     if (accessToken) {
       this.token.value = accessToken
-
-      // Try to restore user from local storage immediately to avoid flickering
       const userJson = localStorage.getItem(this.USER_KEY)
       if (userJson) {
         try {
-          this.user.value = JSON.parse(userJson)
+           this.user.value = JSON.parse(userJson)
         } catch (e) {
           console.error('Failed to parse user from local storage', e)
         }
       }
+    }
+  }
+
+  private async validateSession() {
+     if (typeof window === 'undefined') return
+     const accessToken = this.token.value
+     if (!accessToken) return
 
       try {
         const response = await apiService.client.get<{ success: boolean, data: User }>('/auth/me', {
@@ -42,10 +47,8 @@ export class AuthService {
         this.user.value = response.data.data
         localStorage.setItem(this.USER_KEY, JSON.stringify(this.user.value))
       } catch (error) {
-        // If init session fails, token might be expired. 
-        // Interceptor will catch 401 and try refresh.
+        // Validation failed, let interceptor handle it
       }
-    }
   }
 
   async refreshToken(): Promise<string | null> {
