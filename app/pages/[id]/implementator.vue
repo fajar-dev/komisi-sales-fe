@@ -199,7 +199,14 @@ const columns: TableColumn<InvoiceImplementatorData>[] = [
             td: 'font-bold'
         }
         },
-        cell: ({ row }) => `#${row.getValue('invoiceNumber')}`
+        cell: ({ row }) => {
+            const invoiceNum = row.original.invoiceNumber
+            return h('a', { 
+                href: `https://isx.nusa.net.id/customer.php?module=customer&pid=printNewCustomerInvoice&invoiceNum=${invoiceNum}&urut=${row.original.position}&new=1&proforma=0&signature=0`,
+                target: '_blank',
+                class: 'text-blue-500 hover:underline'
+            }, `#${invoiceNum}`)
+        }
     },
     {
         accessorKey: 'paidDate',

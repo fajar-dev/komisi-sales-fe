@@ -12,81 +12,93 @@
                     :key="item.id"
                 >
                     <template #header>
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex items-center gap-2">
-                                <UAvatar :src="item.requester.avatar" :alt="item.requester.name" size="2xs" />
-                                <div>
-                                    <p class="text-xs font-semibold text-gray-900 dark:text-white leading-tight">{{ item.requester.name }}</p>
-                                    <p class="text-[10px] text-gray-500 dark:text-gray-400">{{ item.timestamp }}</p>
-                                </div>
-                            </div>
-                            <UBadge :label="item.type" size="xs" variant="subtle" color="primary" />
+                        <div class="flex items-center justify-between gap-2">
+                            <UUser
+                                :name="item.requester.name"
+                                :description="item.timestamp"
+                                :avatar="{
+                                    src: item.requester.avatar,
+                                    icon: 'i-lucide-image'
+                                }"
+                            />
+                            <UBadge :label="item.type" size="md" variant="subtle" color="primary" />
                         </div>
                     </template>
 
                     <div class="space-y-2">
-                        <p class="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
-                            {{ item.description }}
-                        </p>
 
-                        <div class="grid grid-cols-2 gap-2">
-                            <!-- Old Value Card (Red) -->
-                            <div class="p-2 rounded border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20">
-                                <ul class="space-y-1">
-                                    <li class="flex justify-between text-[10px]">
-                                        <span class="text-gray-500 dark:text-gray-400">DPP:</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ item.oldValue.dpp }}</span>
-                                    </li>
-                                    <li class="flex justify-between text-[10px]">
-                                        <span class="text-gray-500 dark:text-gray-400">Comm:</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ item.oldValue.commission }}</span>
-                                    </li>
-                                    <li class="flex justify-between text-[10px]">
-                                        <span class="text-gray-500 dark:text-gray-400">Status:</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ item.oldValue.status }}</span>
-                                    </li>
-                                </ul>
-                            </div>
+                        <div class="overflow-hidden rounded border border-gray-200 dark:border-gray-800">
+                            <table class="w-full text-[10px] border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 dark:bg-gray-900">
+                                        <th class="px-2 py-1 text-left font-medium text-gray-500 dark:text-gray-400">
+                                            Field
+                                        </th>
+                                        <th class="px-2 py-1 text-left font-medium text-red-600 dark:text-red-400">
+                                            Value Lama
+                                        </th>
+                                        <th class="px-2 py-1 text-left font-medium text-green-600 dark:text-green-400">
+                                            Value Baru
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-t border-gray-200 dark:border-gray-800">
+                                        <td class="px-2 py-1 text-gray-500 dark:text-gray-400">DPP</td>
+                                        <td class="px-2 py-1 font-medium text-gray-900 dark:text-white">
+                                            {{ item.oldValue.dpp }}
+                                        </td>
+                                        <td class="px-2 py-1 font-medium text-gray-900 dark:text-white">
+                                            {{ item.newValue.dpp }}
+                                        </td>
+                                    </tr>
 
-                            <!-- New Value Card (Green) -->
-                            <div class="p-2 rounded border border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-950/20">
-                                <ul class="space-y-1">
-                                     <li class="flex justify-between text-[10px]">
-                                        <span class="text-gray-500 dark:text-gray-400">DPP:</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ item.newValue.dpp }}</span>
-                                    </li>
-                                    <li class="flex justify-between text-[10px]">
-                                        <span class="text-gray-500 dark:text-gray-400">Comm:</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ item.newValue.commission }}</span>
-                                    </li>
-                                    <li class="flex justify-between text-[10px]">
-                                        <span class="text-gray-500 dark:text-gray-400">Status:</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ item.newValue.status }}</span>
-                                    </li>
-                                </ul>
-                            </div>
+                                    <tr class="border-t border-gray-200 dark:border-gray-800">
+                                        <td class="px-2 py-1 text-gray-500 dark:text-gray-400">Comm</td>
+                                        <td class="px-2 py-1 font-medium text-gray-900 dark:text-white">
+                                            {{ item.oldValue.commission }}
+                                        </td>
+                                        <td class="px-2 py-1 font-medium text-gray-900 dark:text-white">
+                                            {{ item.newValue.commission }}
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-t border-gray-200 dark:border-gray-800">
+                                        <td class="px-2 py-1 text-gray-500 dark:text-gray-400">Status</td>
+                                        <td class="px-2 py-1 font-medium text-gray-900 dark:text-white">
+                                            {{ item.oldValue.status }}
+                                        </td>
+                                        <td class="px-2 py-1 font-medium text-gray-900 dark:text-white">
+                                            {{ item.newValue.status }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
+
+                        <UAlert
+                            variant="soft"
+                            color="neutral"
+                            size="2xs"
+                            description="You can change the primary color in your app config."
+                        />
                     </div>
 
                     <template #footer>
                         <div class="flex gap-2">
                             <UButton 
-                                size="xs"
                                 color="error" 
                                 variant="soft" 
                                 block 
                                 label="Decline" 
                                 class="flex-1"
-                                @click="handleDecline(item.id)"
                             />
                             <UButton 
-                                size="xs"
                                 color="success" 
                                 variant="solid" 
                                 block 
                                 label="Accept" 
                                 class="flex-1"
-                                @click="handleAccept(item.id)"
                             />
                         </div>
                     </template>
@@ -172,26 +184,4 @@ const approvalItems = ref<ApprovalItem[]>([
         timestamp: '3d ago'
     }
 ])
-
-const toast = useToast()
-
-const handleAccept = (id: number) => {
-    toast.add({
-        title: 'Approved',
-        description: `Request #${id} accepted`,
-        icon: 'i-lucide-check-circle',
-        color: 'success', 
-    })
-    approvalItems.value = approvalItems.value.filter(i => i.id !== id)
-}
-
-const handleDecline = (id: number) => {
-    toast.add({
-        title: 'Declined',
-        description: `Request #${id} declined`,
-        icon: 'i-lucide-x-circle',
-        color: 'error',
-    })
-    approvalItems.value = approvalItems.value.filter(i => i.id !== id)
-}
 </script>

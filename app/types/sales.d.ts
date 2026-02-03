@@ -52,6 +52,7 @@ export interface InvoiceSalesResponseData {
 export interface InvoiceSalesData {
     ai: number;
     invoiceNumber: number;
+    position: number;
     invoiceDate: string;
     dpp: number;
     newSub:number

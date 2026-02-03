@@ -260,6 +260,7 @@ import { InvoiceService } from '~/services/invoice'
 import type { Employee } from '~/types/employee'
 
 import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
+import { type Row } from '@tanstack/table-core'
 
 const df = new DateFormatter('en-US', {
   dateStyle: 'medium'
@@ -271,11 +272,14 @@ const modelValue = shallowRef({
 })
 
 import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
 import { AdditionalService } from '~/services/additional'
 import type { InvoiceSalesData } from '~/types/sales'
 
 const UBadge = resolveComponent('UBadge')
+const UButton = resolveComponent('UButton')
+const UDropdownMenu = resolveComponent('UDropdownMenu')
+
 
 const data = ref<InvoiceSalesData[]>([])
 
@@ -288,7 +292,14 @@ const columns: TableColumn<InvoiceSalesData>[] = [
             td: 'font-bold'
         }
         },
-        cell: ({ row }) => `#${row.getValue('invoiceNumber')}`
+        cell: ({ row }) => {
+            const invoiceNum = row.original.invoiceNumber
+            return h('a', { 
+                href: `https://isx.nusa.net.id/customer.php?module=customer&pid=printNewCustomerInvoice&invoiceNum=${invoiceNum}&urut=${row.original.position}&new=1&proforma=0&signature=0`,
+                target: '_blank',
+                class: 'text-blue-500 hover:underline'
+            }, `#${invoiceNum}`)
+        }
     },
     {
         accessorKey: 'paidDate',
@@ -427,9 +438,41 @@ const columns: TableColumn<InvoiceSalesData>[] = [
                 currency: 'IDR'
             }).format(total))
         }
+    },
+    {
+    id: 'actions',
+    cell: ({ row }) => {
+        return h(
+            'div',
+            { class: 'text-right' },
+            h(
+            UDropdownMenu,
+            { content: { align: 'end' }, items: getRowItems(row) },
+            () =>
+                h(UButton, {
+                icon: 'i-lucide-ellipsis-vertical',
+                color: 'neutral',
+                variant: 'ghost',
+                class: 'ml-auto'
+                })
+            )
+        )
+        }
     }
 ]
 
+const getRowItems = (row: Row<InvoiceSalesData>) => {
+    const items: DropdownMenuItem[] = [
+        {
+            label: 'Change',
+            icon: 'i-lucide-edit',
+            size: 'xs',
+            onClick: () => {
+            }
+        }
+    ]
+    return items
+}
 
 const route = useRoute()
 const employee = ref<Employee>()  

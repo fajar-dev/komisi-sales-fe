@@ -40,6 +40,7 @@ export interface ImplementatorInvoiceQueryParams {
 export interface InvoiceImplementatorData {
     ai: number;
     invoiceNumber: number;
+    position: number;
     invoiceDate: string;
     paidDate: string;
     monthPeriod: number;

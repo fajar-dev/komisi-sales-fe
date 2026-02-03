@@ -18,7 +18,7 @@
             class="flex items-center gap-1"
         >
         
-            <!-- <NotificationsSlideover /> -->
+            <NotificationsSlideover />
 
             <UColorModeButton size="sm" />
             <ClientOnly>
