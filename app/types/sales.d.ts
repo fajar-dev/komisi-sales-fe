@@ -54,6 +54,9 @@ export interface InvoiceSalesData {
     invoiceNumber: number;
     invoiceDate: string;
     dpp: number;
+    newSub:number
+    paidDate: string;
+    monthPeriod: number;
     customerServiceId: number;
     customerId: string;
     customerCompany: string;
@@ -68,6 +71,9 @@ export interface InvoiceSalesData {
     isUpgrade: boolean;
     isTermin: boolean;
     salesCommission: number;
+    isAdjustment: boolean;
+    type:string
+    typeSub:string
     salesCommissionPercentage: number;
 }
 

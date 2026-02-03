@@ -1,23 +1,26 @@
 <template>
     <UContainer>
         <HeroBackground />
-        <div class="py-10">
+        <div class="md:py-8 py-2">
             <div class="flex md:flex-row flex-col items-end justify-between gap-4">
-                <div class="flex items-center gap-1">
-                    <UUser
-                        :avatar="{
-                            src: employee?.photo_profile,
-                            icon: 'i-lucide-image'
-                        }"
-                        :ui="{ avatar: 'h-10 w-10' }"
-                    />
-                    <div>
-                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-                                {{ employee?.name }}'s Commission
-                        </h2>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Monthly sales commission heatmap 🔥                    
-                        </p>
+                <div class="md:flex items-center gap-2">
+                    <UButton icon="i-lucide-arrow-left" size="lg" color="neutral" variant="ghost" to="/"/>
+                    <div class="flex items-center gap-1">
+                        <UUser
+                            :avatar="{
+                                src: employee?.photo_profile,
+                                icon: 'i-lucide-image'
+                            }"
+                            :ui="{ avatar: 'h-10 w-10' }"
+                        />
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+                                    {{ employee?.name }}'s Commission
+                            </h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Monthly sales commission heatmap 🔥                    
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <USelectMenu v-model="year" :items="items" />
@@ -243,7 +246,7 @@
                         </UPopover>
                     </div>
                 </template>
-                    <UTable sticky :data="data" :columns="columns" class="flex-1 max-h-[800px]" />
+                    <UTable sticky :data="data" :columns="columns" class="flex-1 max-h-[800px] [&_tr:has(.commission-zero)]:bg-red-50 dark:[&_tr:has(.commission-zero)]:bg-red-950/20" />
                 </UCard>
             </div>
         </div>
@@ -255,7 +258,6 @@ import { CommissionService } from '~/services/commission-service'
 import { EmployeeService } from '~/services/employee-service'
 import { InvoiceService } from '~/services/invoice'
 import type { Employee } from '~/types/employee'
-import type { InvoiceSalesData } from '~/types/invoice'
 
 import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 
@@ -271,6 +273,7 @@ const modelValue = shallowRef({
 import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { AdditionalService } from '~/services/additional'
+import type { InvoiceSalesData } from '~/types/sales'
 
 const UBadge = resolveComponent('UBadge')
 
@@ -288,10 +291,10 @@ const columns: TableColumn<InvoiceSalesData>[] = [
         cell: ({ row }) => `#${row.getValue('invoiceNumber')}`
     },
     {
-        accessorKey: 'invoiceDate',
-        header: 'Invoice Date',
+        accessorKey: 'paidDate',
+        header: 'Paid Date',
         cell: ({ row }) => {
-        return new Date(row.getValue('invoiceDate')).toLocaleString('en-US', {
+        return new Date(row.getValue('paidDate')).toLocaleString('en-US', {
             day: 'numeric',
             month: 'short',
             year: 'numeric'
@@ -311,7 +314,15 @@ const columns: TableColumn<InvoiceSalesData>[] = [
         if (row.original.isTermin) {
             return h(UBadge, { color: 'warning', variant: 'subtle' }, () => 'Termin')
         }
-        return h(UBadge, { color: 'info', variant: 'subtle' }, () => 'Recurring')
+        else {
+            if(row.original.typeSub == 'flex')
+                return h(UBadge, { color: 'info', variant: 'solid' }, () => 'Flex')
+            if(row.original.typeSub == 'annual_yearly')
+                return h(UBadge, { color: 'success', variant: 'solid' }, () => 'Annual Yearly')
+            }
+            if(row.original.typeSub == 'annual_monthly')
+                return h(UBadge, { color: 'neutral', variant: 'solid' }, () => 'Annual Monthly')
+            return h(UBadge, { color: 'info', variant: 'subtle' }, () => 'Recurring')
         }
     },
     {
@@ -358,6 +369,18 @@ const columns: TableColumn<InvoiceSalesData>[] = [
         }
     },
     {
+        header: 'Month Period',
+        meta: {
+            class: {
+                th: 'text-right',
+                td: 'text-right font-medium'
+            }
+        },
+        cell: ({ row }) => {
+        return row.original.monthPeriod
+        }
+    },
+    {
         header: 'Commission',
         meta: {
         class: {
@@ -366,7 +389,8 @@ const columns: TableColumn<InvoiceSalesData>[] = [
         }
         },
         cell: ({ row }) => {
-        return h('div', { class: 'flex flex-col' }, [
+        const isZero = Number(row.original.salesCommission) === 0
+        return h('div', { class: ['flex flex-col', isZero ? 'commission-zero' : ''] }, [
             h('span', { class: 'text-sm text-highlighted' }, Intl.NumberFormat('id-ID', { style: 'decimal' }).format(row.original.salesCommissionPercentage) + '%'),
             h('span', { class: 'text-sm' }, new Intl.NumberFormat('id-ID', {
                 style: 'currency',

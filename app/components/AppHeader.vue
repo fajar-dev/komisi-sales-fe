@@ -15,8 +15,10 @@
         <template #right>
         <div
             role="group"
-            class="flex items-center gap-0.5"
+            class="flex items-center gap-1"
         >
+        
+            <!-- <NotificationsSlideover /> -->
 
             <UColorModeButton size="sm" />
             <ClientOnly>
