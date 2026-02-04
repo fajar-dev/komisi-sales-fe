@@ -1,5 +1,10 @@
 <template>
     <UContainer>
+        <AdjustmentModal
+          :ai="invoiceAi"
+          v-model:open="isAdjustmentModalOpen"
+          @updated="fetchInvoiceData()"
+        />
         <HeroBackground />
         <div class="md:py-8 py-2">
             <div class="flex md:flex-row flex-col items-end justify-between gap-4">
@@ -246,7 +251,12 @@
                         </UPopover>
                     </div>
                 </template>
-                    <UTable sticky :data="data" :columns="columns" class="flex-1 max-h-[800px] [&_tr:has(.commission-zero)]:bg-red-50 dark:[&_tr:has(.commission-zero)]:bg-red-950/20" />
+                    <UTable sticky :data="data" :columns="columns" class="flex-1 max-h-[800px] [&_tr:has(.commission-zero)]:bg-yellow-50 dark:[&_tr:has(.commission-zero)]:bg-yellow-950/20 [&_tr:has(.row-deleted)]:bg-red-50 dark:[&_tr:has(.row-deleted)]:bg-red-950/20" />
+                    <div class="p-4 border-t border-gray-200 dark:border-gray-800" v-if="zeroCommissionCount > 0">
+                        <p class="text-sm text-yellow-500 font-medium">
+                            {{ zeroCommissionCount }} invoice doesn't have commission
+                        </p>
+                    </div>
                 </UCard>
             </div>
         </div>
@@ -256,7 +266,7 @@
 <script setup lang="ts">
 import { CommissionService } from '~/services/commission-service'
 import { EmployeeService } from '~/services/employee-service'
-import { InvoiceService } from '~/services/invoice'
+import { InvoiceService } from '~/services/invoice-service'
 import type { Employee } from '~/types/employee'
 
 import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
@@ -271,10 +281,13 @@ const modelValue = shallowRef({
     end: new CalendarDate(2026, 1, 31)
 })
 
+const isAdjustmentModalOpen = ref(false)
+const invoiceAi = ref<number>(0)
+
 import { h, resolveComponent } from 'vue'
 import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
-import { AdditionalService } from '~/services/additional'
-import type { InvoiceSalesData } from '~/types/sales'
+import { AdditionalService } from '~/services/additional-service'
+import type { InvoiceSalesData, InvoiceSalesResponseData } from '~/types/sales'
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
@@ -282,6 +295,11 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 
 
 const data = ref<InvoiceSalesData[]>([])
+const responseData = ref<InvoiceSalesResponseData['data']>({ data: [], totalCommission: 0, totalDpp: 0 })
+
+const zeroCommissionCount = computed(() => {
+    return data.value.filter(item => Number(item.salesCommission) === 0).length
+})
 
 const columns: TableColumn<InvoiceSalesData>[] = [
     {
@@ -297,7 +315,7 @@ const columns: TableColumn<InvoiceSalesData>[] = [
             return h('a', { 
                 href: `https://isx.nusa.net.id/customer.php?module=customer&pid=printNewCustomerInvoice&invoiceNum=${invoiceNum}&urut=${row.original.position}&new=1&proforma=0&signature=0`,
                 target: '_blank',
-                class: 'text-blue-500 hover:underline'
+                class: ['text-blue-500 hover:underline', row.original.isDeleted ? 'row-deleted' : '']
             }, `#${invoiceNum}`)
         }
     },
@@ -349,7 +367,11 @@ const columns: TableColumn<InvoiceSalesData>[] = [
             }
 
             if(row.original.isAdjustment) {
-                badges.push({ label: 'Adjustment', color: 'danger', variant: 'solid' })
+                badges.push({ label: 'Adjustment', color: 'warning', variant: 'solid' })
+            }
+
+            if(row.original.isDeleted) {
+                badges.push({ label: 'Deleted', color: 'error', variant: 'solid' })
             }
 
             return h('div', { class: 'flex gap-1 flex-wrap' }, badges.map(badge => 
@@ -391,13 +413,11 @@ const columns: TableColumn<InvoiceSalesData>[] = [
             currency: 'IDR'
         }).format(amount)
         },
-        footer: ({ table }) => {
-            const rows = table.getFilteredRowModel().rows
-            const total = rows.reduce((acc, row) => acc + (Number(row.original.dpp) || 0), 0)
+        footer: () => {
             return h('div', { class: 'text-right font-bold' }, new Intl.NumberFormat('id-ID', {
                 style: 'currency',
                 currency: 'IDR'
-            }).format(total))
+            }).format(responseData.value.totalDpp ?? 0))
         }
     },
     {
@@ -430,13 +450,11 @@ const columns: TableColumn<InvoiceSalesData>[] = [
             }).format(row.original.salesCommission))
         ])
         },
-        footer: ({ table }) => {
-            const rows = table.getFilteredRowModel().rows
-            const total = rows.reduce((acc, row) => acc + (Number(row.original.salesCommission) || 0), 0)
+        footer: () => {
             return h('div', { class: 'text-right font-bold' }, new Intl.NumberFormat('id-ID', {
                 style: 'currency',
                 currency: 'IDR'
-            }).format(total))
+            }).format(responseData.value.totalCommission ?? 0))
         }
     },
     {
@@ -464,10 +482,12 @@ const columns: TableColumn<InvoiceSalesData>[] = [
 const getRowItems = (row: Row<InvoiceSalesData>) => {
     const items: DropdownMenuItem[] = [
         {
-            label: 'Change',
+            label: 'Adjust Commission',
             icon: 'i-lucide-edit',
             size: 'xs',
             onClick: () => {
+                 invoiceAi.value = row.original.ai
+                isAdjustmentModalOpen.value = true
             }
         }
     ]
@@ -709,11 +729,12 @@ const fetchInvoiceData = async () => {
     if (!modelValue.value.start || !modelValue.value.end) return
 
     const invoiceService = new InvoiceService()
-    const invoiceData = await invoiceService.getInvoiceSales(route.params.id as string, {
+    const response = await invoiceService.getInvoiceSales(route.params.id as string, {
         startDate: modelValue.value.start.toString(),
         endDate: modelValue.value.end.toString()
     })
-    data.value = invoiceData.data.data
+    responseData.value = response.data
+    data.value = response.data.data
 }
 
 watch(year, () => {

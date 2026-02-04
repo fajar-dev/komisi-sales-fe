@@ -85,17 +85,12 @@ import type { FormSubmitEvent } from "@nuxt/ui"
 const loading = ref(false)
 
 const handleOnSuccess = async (response: any) => {
-  try {
-    const result = await authService.googleLogin(response.code);
-    toast.add({ description: 'Login Successful', color: 'primary' })
-    
-    const { getRoute } = useDashboardRoute()
-    navigateTo(getRoute(result.data.user))
-  } catch (error) {
-    toast.add({ description: 'Authentication failed', color: 'error' })
-  } finally {
-    googleLoading.value = false
-  }
+  const result = await authService.googleLogin(response.code);
+  toast.add({ description: 'Login Successful', color: 'primary' })
+  
+  const { getRoute } = useDashboardRoute()
+  navigateTo(getRoute(result.data.user))
+  googleLoading.value = false
 };
 
 const handleOnError = (errorResponse: any) => {

@@ -183,7 +183,7 @@
 <script setup lang="ts">
 import { CommissionService } from '~/services/commission-service'
 import { EmployeeService } from '~/services/employee-service'
-import { TeamService } from '~/services/team'
+import { TeamService } from '~/services/team-service'
 import type { Employee } from '~/types/employee'
 import type { ManagerTeamData } from '~/types/team'
 import { h, resolveComponent } from 'vue'

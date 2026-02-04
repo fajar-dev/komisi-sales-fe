@@ -11,7 +11,7 @@ export class AdditionalService {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.message)
+            handleServiceError(error)
         }
     }
 }

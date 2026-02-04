@@ -14,7 +14,7 @@ export class CommissionService {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.message)
+            handleServiceError(error)
         }
     }
 
@@ -28,7 +28,7 @@ export class CommissionService {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.message)
+            handleServiceError(error)
         }
     }
 
@@ -42,7 +42,7 @@ export class CommissionService {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.message)
+            handleServiceError(error)
         }
     }
 }

@@ -12,7 +12,7 @@ export class EmployeeService {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.message)
+            handleServiceError(error)
         }
     }
 

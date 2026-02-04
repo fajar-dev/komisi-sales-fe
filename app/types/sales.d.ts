@@ -45,8 +45,15 @@ export interface InvoiceSalesResponseData {
     message: string;
     data: {
         data: InvoiceSalesData[];
-        total: number;
+        totalCommission: number;
+        totalDpp: number;
     };
+}
+
+export interface InvoiceSalesShowResponseData {
+    success: boolean;
+    message: string;
+    data: InvoiceSalesData;
 }
 
 export interface InvoiceSalesData {
@@ -76,5 +83,6 @@ export interface InvoiceSalesData {
     type:string
     typeSub:string
     salesCommissionPercentage: number;
+    isDeleted: boolean;
 }
 

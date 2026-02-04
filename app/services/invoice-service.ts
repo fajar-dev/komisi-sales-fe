@@ -1,4 +1,4 @@
-import type { InvoiceSalesResponseData, SalesInvoiceQueryParams } from "~/types/sales"
+import type { InvoiceSalesResponseData, InvoiceSalesShowResponseData, SalesInvoiceQueryParams } from "~/types/sales"
 import { apiService } from "./api-service"
 import type { InvoiceImplementatorResponseData, ImplementatorInvoiceQueryParams } from "~/types/implementator"
 
@@ -14,7 +14,20 @@ export class InvoiceService {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.message)
+            handleServiceError(error)
+        }
+    }
+
+    async getInvoiceById(employeeId: string, ai: string): Promise<InvoiceSalesShowResponseData> {
+        try {
+            const response = await apiService.client.get(`/sales/${employeeId}/invoice/${ai}`, {
+                headers: {
+                    authorization: `Bearer ${useAuth().state.token}`
+                }
+            })
+            return response.data
+        } catch (error: any) {
+            handleServiceError(error)
         }
     }
 
@@ -28,7 +41,7 @@ export class InvoiceService {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.message)
+            handleServiceError(error)
         }
     }
 }

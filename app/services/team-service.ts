@@ -13,7 +13,7 @@ export class TeamService {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.message)
+            handleServiceError(error)
         }
     }
 }

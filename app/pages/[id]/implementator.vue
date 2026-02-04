@@ -164,10 +164,10 @@
 </template>
 
 <script setup lang="ts">
-import { AdditionalService } from '~/services/additional'
+import { AdditionalService } from '~/services/additional-service'
 import { CommissionService } from '~/services/commission-service'
 import { EmployeeService } from '~/services/employee-service'
-import { InvoiceService } from '~/services/invoice'
+import { InvoiceService } from '~/services/invoice-service'
 import type { Employee } from '~/types/employee'
 
 import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
