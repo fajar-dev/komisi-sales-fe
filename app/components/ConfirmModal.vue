@@ -1,7 +1,11 @@
 
 
 <template>
-    <UModal>
+    <UModal
+        :ui="{
+            overlay: 'bg-white/45 dark:bg-black/45 backdrop-blur-xs'
+        }"
+    >
         <template #content>
         <div class="p-5">
             <div class="space-y-1">

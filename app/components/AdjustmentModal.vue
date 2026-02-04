@@ -1,3 +1,104 @@
+<template>
+  <UModal
+    :open="props.open"
+    :title="`#${invoiceData?.invoiceNumber}`"
+    :description="invoiceData?.customerCompany"
+    @update:open="emit('update:open', $event)"
+    :ui="{
+      overlay: 'bg-white/45 dark:bg-black/45 backdrop-blur-xs'
+    }"
+  >
+    <template #body>
+      <div v-if="loading" class="flex justify-center py-8">
+        <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-gray-500" />
+      </div>
+      
+      <div v-else class="space-y-4">
+          <UAlert
+            color="warning"
+            variant="subtle"
+            description="Data changes may affect the commission of the Implementator and Sales Manager."
+            icon="i-lucide-alert-triangle"
+            size="xs"
+            :ui="{
+              icon: 'pt-8'
+            }"
+          />
+
+        <UForm
+            :schema="schema"
+            :state="formData"
+            class="space-y-3"
+            @submit="onSubmit"
+        >
+            <UFormField name="isDeleted" label="Delete Data">
+                <div class="flex items-center gap-2">
+                    <USwitch v-model="formData.isDeleted" />
+                    <span class="text-sm text-gray-500">Enable to soft delete/hide this invoice</span>
+                </div>
+            </UFormField>
+
+            <template v-if="!formData.isDeleted">
+
+                <div class="grid grid-cols-10 gap-2">
+                  <UFormField name="paidDate" label="Paid Date" required class="col-span-7">
+                      <UInput v-model="formData.paidDate" type="date" class="w-full" />
+                  </UFormField>
+                  <UFormField name="monthPeriod" label="Month Period" required class="col-span-3">
+                      <UInput v-model="formData.monthPeriod" type="number" class="w-full" />
+                  </UFormField>
+                </div>
+
+                <div class="grid grid-cols-10 gap-2">
+                    <UFormField name="percentage" label="Percentage (%)" required class="col-span-3">
+                        <USelect 
+                            v-model.number="formData.percentage" 
+                            :items="percentageOptions" 
+                            class="w-full" 
+                        />
+                    </UFormField>
+                    <UFormField name="commission" label="Commission" required class="col-span-7">
+                        <UInput v-model.number="formData.commission" type="number" class="w-full" >
+                            <template #leading>
+                                <span class="text-gray-500 text-sm">Rp.</span>
+                            </template>
+                        </UInput>
+                    </UFormField>
+                </div>
+
+            </template>
+
+            <UFormField label="Note" name="note" required>
+                <UTextarea
+                    v-model="formData.note"
+                    class="w-full"
+                    placeholder="Reason..."
+                    :rows="3"
+                />
+            </UFormField>
+
+            <div class="flex justify-end gap-2">
+            <UButton
+                label="Cancel"
+                color="neutral"
+                variant="subtle"
+                :disabled="saving"
+                @click="emit('update:open', false)"
+            />
+            <UButton
+                label="Save"
+                color="primary"
+                variant="solid"
+                type="submit"
+                :loading="saving"
+            />
+            </div>
+        </UForm>
+      </div>
+    </template>
+  </UModal>
+</template>
+
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
@@ -169,101 +270,3 @@ async function onSubmit(_event: FormSubmitEvent<Schema>) {
   saving.value = false
 }
 </script>
-
-<template>
-  <UModal
-    :open="props.open"
-    :title="`#${invoiceData?.invoiceNumber}`"
-    :description="invoiceData?.customerCompany"
-    @update:open="emit('update:open', $event)"
-  >
-    <template #body>
-      <div v-if="loading" class="flex justify-center py-8">
-        <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-gray-500" />
-      </div>
-      
-      <div v-else class="space-y-4">
-          <UAlert
-            color="warning"
-            variant="subtle"
-            description="Data changes may affect the commission of the Implementator and Sales Manager."
-            icon="i-lucide-alert-triangle"
-            size="xs"
-            :ui="{
-              icon: 'pt-8'
-            }"
-          />
-
-        <UForm
-            :schema="schema"
-            :state="formData"
-            class="space-y-3"
-            @submit="onSubmit"
-        >
-            <UFormField name="isDeleted" label="Delete Data">
-                <div class="flex items-center gap-2">
-                    <USwitch v-model="formData.isDeleted" />
-                    <span class="text-sm text-gray-500">Enable to soft delete/hide this invoice</span>
-                </div>
-            </UFormField>
-
-            <template v-if="!formData.isDeleted">
-
-                <div class="grid grid-cols-10 gap-2">
-                  <UFormField name="paidDate" label="Paid Date" required class="col-span-7">
-                      <UInput v-model="formData.paidDate" type="date" class="w-full" />
-                  </UFormField>
-                  <UFormField name="monthPeriod" label="Month Period" required class="col-span-3">
-                      <UInput v-model="formData.monthPeriod" type="number" class="w-full" />
-                  </UFormField>
-                </div>
-
-                <div class="grid grid-cols-10 gap-2">
-                    <UFormField name="percentage" label="Percentage (%)" required class="col-span-3">
-                        <USelect 
-                            v-model.number="formData.percentage" 
-                            :items="percentageOptions" 
-                            class="w-full" 
-                        />
-                    </UFormField>
-                    <UFormField name="commission" label="Commission" required class="col-span-7">
-                        <UInput v-model.number="formData.commission" type="number" class="w-full" >
-                            <template #leading>
-                                <span class="text-gray-500 text-sm">Rp.</span>
-                            </template>
-                        </UInput>
-                    </UFormField>
-                </div>
-
-            </template>
-
-            <UFormField label="Note" name="note" required>
-                <UTextarea
-                    v-model="formData.note"
-                    class="w-full"
-                    placeholder="Reason..."
-                    :rows="3"
-                />
-            </UFormField>
-
-            <div class="flex justify-end gap-2">
-            <UButton
-                label="Cancel"
-                color="neutral"
-                variant="subtle"
-                :disabled="saving"
-                @click="emit('update:open', false)"
-            />
-            <UButton
-                label="Save"
-                color="primary"
-                variant="solid"
-                type="submit"
-                :loading="saving"
-            />
-            </div>
-        </UForm>
-      </div>
-    </template>
-  </UModal>
-</template>

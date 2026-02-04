@@ -1,5 +1,9 @@
 <template>
-    <USlideover title="Approval" description="List of commission changes requiring approval">
+    <USlideover title="Approval" description="List of commission changes requiring approval"
+        :ui="{
+            overlay: 'bg-white/45 dark:bg-black/45 backdrop-blur-xs'
+        }"
+    >
         <div class="relative inline-flex">
             <UButton icon="i-lucide-bell" size="sm" color="neutral" variant="ghost" @click="fetchAdjustments" />
             <span v-if="approvalItems.length" class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-gray-900 bg-green-500 transform translate-x-1/4 -translate-y-1/4" />

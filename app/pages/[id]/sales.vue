@@ -6,31 +6,12 @@
           @updated="fetchInvoiceData()"
         />
         <HeroBackground />
-        <div class="md:py-8 py-2">
-            <div class="flex md:flex-row flex-col items-end justify-between gap-4">
-                <div class="md:flex items-center gap-2">
-                    <UButton icon="i-lucide-arrow-left" size="lg" color="neutral" variant="ghost" to="/"/>
-                    <div class="flex items-center gap-1">
-                        <UUser
-                            :avatar="{
-                                src: employee?.photo_profile,
-                                icon: 'i-lucide-image'
-                            }"
-                            :ui="{ avatar: 'h-10 w-10' }"
-                        />
-                        <div>
-                            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-                                    {{ employee?.name }}'s Commission
-                            </h2>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Monthly sales commission heatmap 🔥                    
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <USelectMenu v-model="year" :items="items" />
-            </div>
-        </div>
+        <CommissionHeader
+            :employee="employee"
+            v-model:year="year"
+            :year-items="items"
+            subtitle="Monthly sales commission heatmap 🔥"
+        />
 
         <div class="py-2">
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
